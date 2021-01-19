@@ -575,15 +575,19 @@ public class CapacitorHealthkit: CAPPlugin {
     @objc func queryHKActivitySummary(_ call: CAPPluginCall) {
 		let calendar = NSCalendar.current
 
-        let endDate = call.options["endDate"] ?? Date()
-        let startDate = call.options["startDate"] ?? calendar.date(byAdding: .day, value: -7, to: endDate as! Date)
+		guard let _startDate = call.options["startDate"] as? Date else {
+			return call.reject("Must provide startDate")
+		}
+		guard let _endDate = call.options["endDate"] as? Date else {
+			return call.reject("Must provide endDate")
+		}
 
 		let units: Set<Calendar.Component> = [.day, .month, .year, .era]
 
-		var startDateComponents = calendar.dateComponents(units, from: startDate as! Date)
+		var startDateComponents = calendar.dateComponents(units, from: startDate)
 		startDateComponents.calendar = calendar
 
-		var endDateComponents = calendar.dateComponents(units, from: endDate as! Date)
+		var endDateComponents = calendar.dateComponents(units, from: endDate)
 		endDateComponents.calendar = calendar
 
 		// Create the predicate for the query
